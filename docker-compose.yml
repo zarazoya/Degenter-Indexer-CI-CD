@@ -1,0 +1,63 @@
+services:
+#  postgres:
+#    image: postgres:16
+#    container_name: degen_postgres
+#    restart: unless-stopped
+#    environment:
+#      POSTGRES_USER: app_stats
+#      POSTGRES_PASSWORD: SK123SAADcc
+#      POSTGRES_DB: Degen_Clickhouse
+#    volumes:
+#      - ./data/postgres:/var/lib/postgresql/data
+#    ports:
+#      - "5433:5432"
+
+  indexer:
+    build: .
+    container_name: degen_indexer
+    restart: unless-stopped
+#    depends_on:
+#      - postgres
+    env_file:
+      - .env
+    command: ["node", "bin/start-indexer.js"]
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  jobs:
+    build: .
+    container_name: degen_jobs
+    restart: unless-stopped
+#    depends_on:
+#      - postgres
+    env_file:
+      - .env
+    command: ["node", "bin/start-jobs.js"]
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  alerts:
+    build: .
+    container_name: degen_alerts
+    restart: unless-stopped
+#    depends_on:
+#      - postgres
+    env_file:
+      - .env
+    command: ["node", "bin/start-alerts.js"]
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
